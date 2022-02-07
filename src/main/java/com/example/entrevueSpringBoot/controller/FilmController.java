@@ -22,7 +22,7 @@ public class FilmController {
         try {
             List<Film> list = filmRepository.findAll();
 
-            if (list.isEmpty() || list.size() == 0) {
+            if (list.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -32,18 +32,14 @@ public class FilmController {
         }
     }
 
-//    @GetMapping("/films/{id}")
-    @GetMapping("/api/film/{id}")
+    @GetMapping("/films/{id}")
     public ResponseEntity<Film> getFilm(@PathVariable Long id) {
-        Optional<Film> Film = filmRepository.findById(id);
+        Optional<Film> film = filmRepository.findById(id);
 
-        if (Film.isPresent()) {
-            return new ResponseEntity<>(Film.get(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return film.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/api/film")
+    @PostMapping("/film")
     public ResponseEntity<Film> saveFilm(@RequestBody Film Film) {
         try {
             return new ResponseEntity<>(filmRepository.save(Film), HttpStatus.CREATED);
@@ -65,9 +61,7 @@ public class FilmController {
     public ResponseEntity<HttpStatus> deleteFilm(@PathVariable Long id) {
         try {
             Optional<Film> Film = filmRepository.findById(id);
-            if (Film.isPresent()) {
-                filmRepository.delete(Film.get());
-            }
+            Film.ifPresent(film -> filmRepository.delete(film));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

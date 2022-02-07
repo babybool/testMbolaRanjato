@@ -20,7 +20,7 @@ public class Film {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String titre;
 
@@ -28,5 +28,13 @@ public class Film {
 
      @ElementCollection
      private List<Acteur> acteurs;
+
+    @CreationTimestamp
+    @Column(name="created_at", nullable=false, updatable=false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name="updated_at")
+    private Date updatedAt;
 
 }
